@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #eceff1;
+        font-family: "Roboto", sans-serif;
+      }
+
+      .show-data {
+        width: 100%;
+        background-color: #cfd8dc;
+        margin: 20px;
+        padding: 10px;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .show-data h1 {
+        text-align: center;
+      }
+
+      .show-data img {
+        display: block;
+      }
+
+      .show-info {
+        width: 100%;
+      }
+
+      @media (min-width: 800px) {
+        .show-data {
+          display: flex;
+        }
+
+        .show-info {
+          padding: 10px;
+        }
+      }
+
+      @media (max-width: 799px) {
+        .show-data img {
+          margin: auto;
+        }
+
+        .show-info p {
+          text-align: center;
+          padding: 10px;
+        }
+      }
+    </style>
+    <title>Television show</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+        <a class="navbar-brand" href="#">TV Show Viewer</a>
+        <form class="d-flex">
+          <input
+            class="form-control me-2"
+            type="search"
+            placeholder="Search"
+            aria-label="Search"
+            id="input-show"
+          />
+          <button
+            class="btn btn-outline-success"
+            type="submit"
+            id="submit-data"
+          >
+            Search
+          </button>
+        </form>
+      </div>
+    </nav>
+    <div id="shows-container" class="container mt-4"></div>
+
+    <script>
+      const form = document.querySelector(".navbar form");
+      const input = document.getElementById("input-show");
+      const showsContainer = document.getElementById("shows-container");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const query = input.value.trim();
+        if (query !== "") {
+          const apiUrl = `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(
+            query
+          )}`;
+          fetch(apiUrl)
+            .then((response) => response.json())
+            .then((data) => {
+              showsContainer.innerHTML = "";
+              data.forEach((show) => {
+                const showData = document.createElement("div");
+                showData.className = "show-data";
+
+                const showImage = document.createElement("img");
+                showImage.src = show.show.image ? show.show.image.medium : "";
+
+                const showInfo = document.createElement("div");
+                showInfo.className = "show-info";
+
+                const showTitle = document.createElement("h1");
+                showTitle.textContent = show.show.name;
+
+                const showSummary = document.createElement("p");
+                showSummary.innerHTML = show.show.summary;
+
+                showInfo.appendChild(showTitle);
+                showInfo.appendChild(showSummary);
+
+                showData.appendChild(showImage);
+                showData.appendChild(showInfo);
+
+                showsContainer.appendChild(showData);
+              });
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }
+      });
+    </script>
+  </body>
+</html>
